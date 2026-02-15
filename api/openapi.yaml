@@ -1,0 +1,511 @@
+openapi: 3.0.3
+info:
+  title: Split Receipt API
+  description: REST API for splitting restaurant receipts among friends
+  version: 1.0.0
+
+paths:
+  /friends:
+    post:
+      summary: Create a friend
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Friend"
+    get:
+      summary: List all friends
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Friend"
+
+  /friends/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get a friend
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Friend"
+        "404":
+          description: Not found
+    delete:
+      summary: Delete a friend
+      responses:
+        "204":
+          description: Deleted
+
+  /receipts:
+    post:
+      summary: Create a receipt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [restaurant_name, date_time, total]
+              properties:
+                restaurant_name:
+                  type: string
+                date_time:
+                  type: string
+                  format: date-time
+                total:
+                  type: number
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Receipt"
+    get:
+      summary: List all receipts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Receipt"
+
+  /receipts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Get a receipt
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Receipt"
+        "404":
+          description: Not found
+    delete:
+      summary: Delete a receipt
+      responses:
+        "204":
+          description: Deleted
+
+  /receipts/{id}/meals:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      summary: Add a meal to a receipt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, total_price, price_per_unit]
+              properties:
+                name:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+                total_price:
+                  type: number
+                price_per_unit:
+                  type: number
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Meal"
+    get:
+      summary: List meals on a receipt
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Meal"
+
+  /receipts/{id}/meals/{mealId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: mealId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      summary: Remove a meal
+      responses:
+        "204":
+          description: Deleted
+
+  /receipts/{id}/meals/{mealId}/friends:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: mealId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      summary: Assign a friend to a meal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [friend_id]
+              properties:
+                friend_id:
+                  type: string
+                  format: uuid
+      responses:
+        "204":
+          description: Assigned
+
+  /receipts/{id}/meals/{mealId}/friends/{friendId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: mealId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: friendId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      summary: Remove a friend from a meal
+      responses:
+        "204":
+          description: Removed
+
+  /receipts/{id}/fixed-fees:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      summary: Add a fixed fee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, amount]
+              properties:
+                name:
+                  type: string
+                amount:
+                  type: number
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FixedFee"
+    get:
+      summary: List fixed fees
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FixedFee"
+
+  /receipts/{id}/fixed-fees/{feeId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: feeId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      summary: Remove a fixed fee
+      responses:
+        "204":
+          description: Deleted
+
+  /receipts/{id}/percentage-fees:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      summary: Add a percentage fee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, percentage]
+              properties:
+                name:
+                  type: string
+                percentage:
+                  type: number
+                cap_amount:
+                  type: number
+                  nullable: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PercentageFee"
+    get:
+      summary: List percentage fees
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PercentageFee"
+
+  /receipts/{id}/percentage-fees/{feeId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: feeId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    delete:
+      summary: Remove a percentage fee
+      responses:
+        "204":
+          description: Deleted
+
+  /receipts/{id}/friends/{friendId}/settlement:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: friendId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      summary: Calculate a friend's share of a receipt
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Settlement"
+
+components:
+  schemas:
+    Friend:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    Receipt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        restaurant_name:
+          type: string
+        date_time:
+          type: string
+          format: date-time
+        total:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+
+    Meal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        receipt_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        quantity:
+          type: integer
+        total_price:
+          type: number
+        price_per_unit:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+
+    FixedFee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        receipt_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        amount:
+          type: number
+
+    PercentageFee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        receipt_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        percentage:
+          type: number
+        cap_amount:
+          type: number
+          nullable: true
+
+    Settlement:
+      type: object
+      properties:
+        friend_id:
+          type: string
+          format: uuid
+        friend_name:
+          type: string
+        meal_total:
+          type: number
+        fixed_fees:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              amount:
+                type: number
+        percentage_fees:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              amount:
+                type: number
+        total_due:
+          type: number

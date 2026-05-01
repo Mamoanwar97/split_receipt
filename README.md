@@ -2,13 +2,13 @@
 
 A small Go REST API for splitting restaurant receipts among friends. It provides simple endpoints to model receipts, meals, friends, and fees, and to calculate each friend's share.
 
-**Motivation**
+## **Motivation**
 
 - Split shared bills accurately and transparently.
 - Support fixed and percentage-based fees (tax, service) and per-meal assignments.
 - Provide a minimal, well-tested backend that can be used as a reference or integrated into a larger app.
 
-**Quick Start**
+## **Quick Start**
 
 Prerequisites:
 
@@ -33,7 +33,7 @@ DATABASE_URL="postgres://postgres:postgres@localhost:5432/split_receipt?sslmode=
 
 The server listens on port `8080` by default. Set the `PORT` environment variable to change it.
 
-**Usage**
+## **Usage**
 
 Primary concepts:
 
@@ -71,7 +71,7 @@ Settlement calculation summary:
 
 For full API details and request/response shapes, see the OpenAPI spec: [api/openapi.yaml](api/openapi.yaml)
 
-**Development**
+## **Development**
 
 Regenerate sqlc code after changing queries:
 
@@ -91,7 +91,7 @@ Build all packages:
 go build ./...
 ```
 
-**Contributing**
+## **Contributing**
 
 - Fork the repo and open a PR with small, focused changes.
 - Run `go vet ./...` and `go test ./...` before submitting.
